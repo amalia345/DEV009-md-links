@@ -13,7 +13,10 @@
 * [9. Para pedir project feedback](#9-para-pedir-project-feedback)
 
 ***
-
+## 0. Lista de amalia
+  1 Se hizo el projecto
+  2 se hizo las promesas y se revisa si el path es valido y si es valido si es markdown o no
+***
 ## 1. Preámbulo
 
 [Markdown](https://es.wikipedia.org/wiki/Markdown) es un lenguaje de marcado
