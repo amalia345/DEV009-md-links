@@ -13,14 +13,11 @@ mdLinks(path3)
 
 .then((promiseResolve)=>{
     const isMarkdown= promiseResolve[0]
-    const dataExtracted=  promiseResolve[1]
+    const linksExtracted=  promiseResolve[1]
 
     if (isMarkdown) {
         console.log(c.bgGreen('The file exists and its an markdown file'));
-        
-        let arrayMarkdown = stringToArray(dataExtracted)
-        //crear for que identifique que elementos del array son links
-        console.log(arrayMarkdown[2]);
+        console.log(linksExtracted);
 
         // mandara llamar a otra FUNCION QUE SAQUE EL CONTENIDO DEL ARCHIVO READFILE Y RS PROMISES
         // EL CONTENIDO DEL ARCHIVO GUARDALO EN UN ARRAY
@@ -34,6 +31,3 @@ mdLinks(path3)
     console.log(c.bgRed(error));
 });
 
-function stringToArray(params) {
-    return params.split('\n')
-}
