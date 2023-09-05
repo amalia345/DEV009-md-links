@@ -9,5 +9,4 @@ This is a test markdown file for the `mdLinks` function.
 - Visit [google2](www.google.com) for more google.
 
 
-
 Some more text here. And a link without a label: (https://www.example.com).

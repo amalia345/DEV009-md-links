@@ -18,8 +18,7 @@ const mdLinks = (pathArgument, options) => {
       if (isExtensionMD) {
         extractData(absolutePath)
           .then(mdData => {
-            const links = extractLinks(mdData)
-            console.log(links);
+            const links = extractLinks(mdData,absolutePath)
             resolve([isExtensionMD, links])
           })
           .catch(err => {
@@ -57,15 +56,15 @@ function extractData(file) {
     });
   });
 }
-function extractLinks(data) {
-  const regex = /\[([^\]]+)\]\((http[s]?:\/\/[^)]+)\)/g;
-  const fullRegex = /\[([^\]]+)\]\((http[s]?:\/\/[^)]+|www\.[^)]+)\)/g;
+function extractLinks(data,pathFrom) {
+  const fullRegex = /\[([^\]]+)\]\((http[s]?:\/\/[^)]+|www\.[^)]+)\)/g; // regex que saque de google
   let match;
-  const linkArray = []
+  const linkArray = [] // array donde guardar los resultados
   while ((match = fullRegex.exec(data)) !== null) {
     linkArray.push({
       text: match[1],
-      href: match[2]
+      href: match[2],
+      file: pathFrom
     });
   }
   return linkArray
