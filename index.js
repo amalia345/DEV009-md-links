@@ -2,28 +2,20 @@
 // ----------------------imports----------------------
 const fs = require("fs");
 const path = require('path')
-// ----------------------functions----------------------
-const mdLinks = (pathArgument, options) => {
+// ----------------------variables----------------------
+const LINK_REGEX = /\[([^\]]+)\]\((http[s]?:\/\/[^)]+|www\.[^)]+)\)/g; // regex que saque de google
+const MD_EXTENSIONS = ['.md', '.markdown']
+
+// ----------------------mdlinks----------------------
+const mdLinks = (pathArgument) => {
   return new Promise((resolve, reject) => {
-    let absolutePath; // aqui vamos a guardar la ruta absoluta
-
-    if (path.isAbsolute(pathArgument)) { //isAbsolute chea si es absoluta
-      absolutePath = pathArgument // si si lo es solo la guardo
-    } else {
-      absolutePath = path.resolve(pathArgument) // si no, resolve convierte la rutra relativa a absolutA
-    }
-
-    if (fs.existsSync(absolutePath)) { // regresa el resolve la promesa si la ruta del archivo si existe
-      const isExtensionMD = checkIfExtensionMD(absolutePath)
-      if (isExtensionMD) {
-        extractData(absolutePath)
-          .then(mdData => {
-            const links = extractLinks(mdData,absolutePath)
-            resolve([isExtensionMD, links])
-          })
-          .catch(err => {
-            reject("error reading the md file" + err)
-          })
+    const absolutePath = getAbsolutePath(pathArgument)
+    if (fs.existsSync(absolutePath)) { 
+      if (isMarkdownFile(absolutePath)) {
+        readMdFile(absolutePath) // el contenido de readmd file s eguarda ne data
+          .then(data => extractLinks(data,absolutePath))
+          .then(markdownLinks => resolve (markdownLinks))
+          .catch(err => reject("Error reading the md file"));
       }
       else {
         resolve([isExtensionMD, null])
@@ -31,21 +23,15 @@ const mdLinks = (pathArgument, options) => {
     } else {
       reject('rejected This error means that the file doesnt exist')
     }
-    //si no existe r`echazamos la promesa
   });
 };
 
-
-function checkIfExtensionMD(parameter) {
-  const extensionOfFile = path.extname(parameter) // la funcion extname nos regresa la extension del archivo que le demnos como argumento
-  if (extensionOfFile === '.md' || extensionOfFile === '.markdown') {
-    return true
-  } else {
-    return false
-  }
+// ----------------------functions----------------------
+function isMarkdownFile(filePath) {
+  return MD_EXTENSIONS.includes(path.extname(filePath))
 }
 
-function extractData(file) {
+function readMdFile(file) {
   return new Promise((resolve, reject) => {
     fs.readFile(file, 'utf-8', (err, data) => {
       if (err) {
@@ -56,11 +42,10 @@ function extractData(file) {
     });
   });
 }
-function extractLinks(data,pathFrom) {
-  const fullRegex = /\[([^\]]+)\]\((http[s]?:\/\/[^)]+|www\.[^)]+)\)/g; // regex que saque de google
+function extractLinks(data, pathFrom) {
   let match;
   const linkArray = [] // array donde guardar los resultados
-  while ((match = fullRegex.exec(data)) !== null) {
+  while ((match = LINK_REGEX.exec(data)) !== null) {
     linkArray.push({
       text: match[1],
       href: match[2],
@@ -68,6 +53,14 @@ function extractLinks(data,pathFrom) {
     });
   }
   return linkArray
+}
+
+const getAbsolutePath = (inputPath) => {
+  if (path.isAbsolute(inputPath)) {
+    return inputPath
+  } else {
+    return path.resolve(inputPath)
+  }
 }
 // ----------------------exports----------------------
 module.exports = {
