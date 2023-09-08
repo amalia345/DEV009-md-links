@@ -53,7 +53,9 @@ function extractLinks(data, pathFrom, validate) {
       href: match[2],
       file: pathFrom
     }, validate));
+    console.log(linkArray);
   }
+  console.log(linkArray);
   return Promise.all(linkArray)
 }
 
@@ -61,17 +63,14 @@ function checkLinkStatus(linksObject, validate) {
   if (validate) {
     return Promise.resolve(linksObject)
   } else {
-    console.log('entramos alelse');
-    console.log(linksObject.href);
-    //axios.get(linksObject.href).then(console.log(response));
-
     return axios.get(linksObject.href).then(response => {
-      console.log('entramos al then');
       linksObject.status = response.status;
-      linksObject.statusText = response.status >= 200 && response.status < 400 ? 'ok' : 'fail';
+      linksObject.statusText = linksObject.status >= 200 && linksObject.status < 400 ? 'ok' : 'fail';
+      console.log(linksObject);
+      console.log('al final del else de axios');
       return linksObject
     }).catch(error => {
-      linksObject.status = error.response.status
+      linksObject.status = response.status
       linksObject.statusText = 'fail';
       return linksObject
     }); 
