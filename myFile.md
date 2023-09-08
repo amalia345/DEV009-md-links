@@ -6,7 +6,7 @@ This is a test markdown file for the `mdLinks` function.
 - Check out [OpenAI](https://www.openai.com).
 - This is a [non-HTTP link](ftp://example.com) which won't be captured by the regex.
 - Visit [GitHub](https://github.com) for code hosting.
-
+- Visit [google2](www.google.com) for more google.
 
 
 Some more text here. And a link without a label: (https://www.example.com).

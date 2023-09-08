@@ -10,22 +10,18 @@ const MD_EXTENSIONS = ['.md', '.markdown']
 
 // ----------------------mdlinks----------------------
 const mdLinks = (pathArgument, options) => {
-  console.log('1 Entering Md links function');
   return new Promise((resolve, reject) => {
     const absolutePath = getAbsolutePath(pathArgument)
     if (fs.existsSync(absolutePath)) {
       if (isMarkdownFile(absolutePath)) {
         readMdFile(absolutePath) // el contenido de readmd file s eguarda ne data
           .then(data => {
-            console.log('2 File read success');
-            extractLinks(data, absolutePath, options)
+            return extractLinks(data, absolutePath, options)
           })
           .then(markdownLinks => {
-            console.log('3 extracted links');
             resolve(markdownLinks)
           })
           .catch(err => {
-            console.log('4 error in mdlinks');
             reject("Error reading the md file " + err)
           });
       }
@@ -68,22 +64,18 @@ function extractLinks(data, pathFrom, validate) {
 }
 
 function checkLinkStatus(linksObject, validate) {
-  if (validate) {
+  if (!validate) {
     return Promise.resolve(linksObject)
   } else {
     return axios.get(linksObject.href)
     .then(response => {
-      console.log('5 Succesful response gfor link '+ linksObject.href);
       linksObject.status = response.status;
       linksObject.statusText = linksObject.status >= 200 && linksObject.status < 400 ? 'ok' : 'fail';
-      console.log('6 Succesful response gfor link ', linksObject);
       return linksObject
     })
     .catch(error => {
-      console.log('7 error checnado links');
       linksObject.status = error.response ? error.response.status : 'error'
       linksObject.statusText = 'fail';
-      console.log('8 error response gfor link '+ linksObject.href);
       return linksObject
     }); 
   }
