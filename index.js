@@ -2,20 +2,22 @@
 // ----------------------imports----------------------
 const fs = require("fs");
 const path = require('path')
+const axios = require('axios');
+const { error } = require("console");
 // ----------------------variables----------------------
 const LINK_REGEX = /\[([^\]]+)\]\((http[s]?:\/\/[^)]+|www\.[^)]+)\)/g; // regex que saque de google
 const MD_EXTENSIONS = ['.md', '.markdown']
 
 // ----------------------mdlinks----------------------
-const mdLinks = (pathArgument) => {
+const mdLinks = (pathArgument, options) => {
   return new Promise((resolve, reject) => {
     const absolutePath = getAbsolutePath(pathArgument)
-    if (fs.existsSync(absolutePath)) { 
+    if (fs.existsSync(absolutePath)) {
       if (isMarkdownFile(absolutePath)) {
         readMdFile(absolutePath) // el contenido de readmd file s eguarda ne data
-          .then(data => extractLinks(data,absolutePath))
-          .then(markdownLinks => resolve (markdownLinks))
-          .catch(err => reject("Error reading the md file"));
+          .then(data => extractLinks(data, absolutePath, options))
+          .then(markdownLinks => resolve(markdownLinks))
+          .catch(err => reject("Error reading the md file " + err));
       }
       else {
         resolve([isExtensionMD, null])
@@ -42,18 +44,41 @@ function readMdFile(file) {
     });
   });
 }
-function extractLinks(data, pathFrom) {
+function extractLinks(data, pathFrom, validate) {
   let match;
   const linkArray = [] // array donde guardar los resultados
   while ((match = LINK_REGEX.exec(data)) !== null) {
-    linkArray.push({
+    linkArray.push(checkLinkStatus({
       text: match[1],
       href: match[2],
       file: pathFrom
-    });
+    }, validate));
   }
-  return linkArray
+  return Promise.all(linkArray)
 }
+
+function checkLinkStatus(linksObject, validate) {
+  if (validate) {
+    return Promise.resolve(linksObject)
+  } else {
+    console.log('entramos alelse');
+    console.log(linksObject.href);
+    //axios.get(linksObject.href).then(console.log(response));
+
+    return axios.get(linksObject.href).then(response => {
+      console.log('entramos al then');
+      linksObject.status = response.status;
+      linksObject.statusText = response.status >= 200 && response.status < 400 ? 'ok' : 'fail';
+      return linksObject
+    }).catch(error => {
+      linksObject.status = error.response.status
+      linksObject.statusText = 'fail';
+      return linksObject
+    }); 
+  }
+}
+
+
 
 const getAbsolutePath = (inputPath) => {
   if (path.isAbsolute(inputPath)) {
