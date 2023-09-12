@@ -1,67 +1,94 @@
-/* const mdLinks = require('../');
+const fs = require('fs');
+const path = require('path');
+const { mdLinks, getAbsolutePath, isMarkdownFile } = require('../index.js');
 
+// Mock the fs module
+jest.mock('fs');
 
-describe('mdLinks', () => {
+// Sample content
+const mockMDContent = `
+# Sample Markdown
+- [Google](http://google.com)
+- [OpenAI](https://www.openai.com)
+`;
 
-  it('should...', () => {
-    console.log('FIX ME!');
-  });
-
-}); */
-
-
-
-const fs = require('fs')
-const axios = require('axios')
-
-const { mdLinks }= require('../index.js');
-
-jest.mock('fs')
-
-describe('mdLinks', () => {
-
-  test('rechaza si el archivo no existe',() =>{
-    fs.existsSync.mockReturnValue(false)
-    return mdLinks('no-existo',{}).catch(e => {
-      expect(e).toEqual('rejected This error means that the file doesnt exist')
-    });
-  });
-
-  test('recibe 3 objetos si todo esta bien',() =>{
-    const validPath = 'path/valid/valid-file.md'
-    const linkContent = '[Google](https://www.google.com)'
-          
-    fs.existsSync.mockReturnValue(false)
-
-    fs.readFile.mockImplementation((path,encoding,callback)=> {
-      if (path ===validPath) {
-        callback(null,linkContent)
-      } else {
-        callback(new Error('File not found'))
-      }
-    })
-
-    return mdLinks(validPath,{validate:false}).then(links => {
-      expect(links).toHaveLength(1);
-    });
-  });
-
-  // it('should...', () => {
-  //   console.log('FIX ME!');
-  // });
-  // it('Return a promise ', () => {
-  //   expect ( mdLinks()).toBe(typeof Promise);
-  // });
-
-
-
-/*   it(' Decline when the path dont exist', () => {
-  return mdLinks('/erika/cursos/noexist.md').catch((error) =>{
-    expect (error).toBe('La ruta no existe')
-  }) 
-  
-  }); */
+// Reset or clear the mocks before each test
+beforeEach(() => {
+  jest.clearAllMocks();
 });
 
+describe('getAbsolutePath', () => {
 
-//funcion asincrona
+  test('Regresa el mismo si ya es absoluta la ruta', () => {
+    const absoluteInput = '\\home\\user\\some\\absolute\\path';
+    expect(getAbsolutePath(absoluteInput)).toEqual(absoluteInput);
+  });
+
+  test('Regresa una ruta absoluta si es relativa', () => {
+    const relativeInput = 'relative\\path';
+    const expectedOutput = path.resolve(relativeInput);
+    expect(getAbsolutePath(relativeInput)).toEqual(expectedOutput);
+  });
+});
+
+describe('isMarkdownFile', () => {
+
+  test('Regresa True si es .md', () => {
+    expect(isMarkdownFile('ejemplo1.md')).toBe(true);
+  });
+
+  test('Regresa True si es .markdown', () => {
+    expect(isMarkdownFile('ejemplo2.markdown')).toBe(true);
+  });
+
+  test('Regresa False si es .txt o otra extension', () => {
+    expect(isMarkdownFile('ejemplo3.txt')).toBe(false);
+  });
+
+  test('Regresa False si no tiene extension', () => {
+    expect(isMarkdownFile('ejemplo4')).toBe(false);
+  });
+});
+
+describe('mdLinks', () => {
+
+  test('rechaza si el archivo no existe', () => {
+    fs.existsSync.mockReturnValue(false);
+    return expect(mdLinks('no-existo', {})).rejects.toEqual('rejected This error means that the file doesnt exist');
+  });
+
+  test('resuelve si el archivo si existe', async () => {
+    fs.existsSync.mockReturnValue(true);
+    fs.readFile.mockImplementation((path, encoding, callback) => {
+      callback(null, mockMDContent);
+    });
+
+    const result = await mdLinks('archivo-existe.md', {});
+    expect(result).toBeDefined();
+  });
+
+  test('should correctly extract 2 links with validation', async () => {
+    fs.existsSync.mockReturnValue(true);
+    fs.readFile.mockImplementation((path, encoding, callback) => {
+      callback(null, mockMDContent);
+    });
+
+    const result = await mdLinks('mockfile.md', { validate: true });
+
+    expect(result.length).toBe(2);
+    expect(result[0]).toEqual({
+      text: 'Google',
+      href: 'http://google.com',
+      file: expect.any(String),
+      status: 200,
+      statusText: 'ok'
+    });
+    expect(result[1]).toEqual({
+      t;/ext: 'OpenAI',
+      href: 'https://www.openai.com',
+      file: expect.any(String),
+      status: 200,
+      statusText: 'ok'
+    });
+  });
+});

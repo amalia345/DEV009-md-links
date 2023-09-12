@@ -92,5 +92,7 @@ const getAbsolutePath = (inputPath) => {
 }
 // ----------------------exports----------------------
 module.exports = {
-  mdLinks
+  mdLinks,
+  getAbsolutePath,
+  isMarkdownFile
 }
