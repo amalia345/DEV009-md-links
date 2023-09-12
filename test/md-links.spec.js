@@ -84,7 +84,7 @@ describe('mdLinks', () => {
       statusText: 'ok'
     });
     expect(result[1]).toEqual({
-      t;/ext: 'OpenAI',
+      text: 'OpenAI',
       href: 'https://www.openai.com',
       file: expect.any(String),
       status: 200,
