@@ -1,83 +1,86 @@
 
 // ----------------------imports----------------------
-const fs = require("fs");
-const path = require('path')
-const axios = require('axios');
-const { error } = require("console");
+const fs = require("fs"); // FS es un modulo nativo de node, me ayuda a interactuar con archivos del sistema
+const path = require('path') // otro nodulo de node ayuda a trabajar con rutas path de archivos y directorios
+const axios = require('axios'); // nos ayuda a hacer solicitudes a paginas http 
+
+
 // ----------------------variables----------------------
-const LINK_REGEX = /\[([^\]]+)\]\((http[s]?:\/\/[^)]+|www\.[^)]+)\)/g; // regex que saque de google
-const MD_EXTENSIONS = ['.md', '.markdown']
+const LINK_REGEX = /\[([^\]]+)\]\((http[s]?:\/\/[^)]+|www\.[^)]+)\)/g; // regex que saque de google para checar si teneomos http o wwww en links
+const MD_EXTENSIONS = ['.md', '.markdown'] // las extensiones de tipo markdown
 
 // ----------------------mdlinks----------------------
-const mdLinks = (pathArgument, options) => {
+const mdLinks = (pathArgument, options) => { // argumentos 1 la ruta del archivo 2 true o false par ver si validamos los links
   return new Promise((resolve, reject) => {
-    const absolutePath = getAbsolutePath(pathArgument)
-    if (fs.existsSync(absolutePath)) {
-      if (isMarkdownFile(absolutePath)) {
-        readMdFile(absolutePath) // el contenido de readmd file s eguarda ne data
-          .then(data => {
-            return extractLinks(data, absolutePath, options)
+
+    const absolutePath = getAbsolutePath(pathArgument) // usando la funcion getAbsolute convierto el path a absoluto
+
+    if (fs.existsSync(absolutePath)) {  // checo si el archivo existe
+      if (isMarkdownFile(absolutePath)) { // si el archivo existe ahora checho si es un archivo markdown
+        readMdFile(absolutePath) // si es un archivo amrkon lo leo usando la funcion ReadMDFILE
+          .then(data => {         // si se resuelve la funcion guardamos lo que nos regresa en una variable llamada data
+            return extractLinks(data, absolutePath, options)  // usamos la variabel data como prametro de la funcione para extraer los links
           })
-          .then(markdownLinks => {
-            resolve(markdownLinks)
+          .then(markdownLinks => { // resolvemos la promesa principal con los links que nos regresa extractLinks guardandolos en markdownLinks
+            resolve(markdownLinks) // y mandamos esos markdownlinks al CLI
           })
-          .catch(err => {
+          .catch(err => { // error por si falla la fupromesa despues d eller el archiivo
             reject("Error reading the md file " + err)
           });
       }
       else {
-        resolve([isExtensionMD, null])
+        resolve([isExtensionMD, null]) // checar que hacer en este else cuando el archivo esxiste pero no es md
       }
     } else {
-      reject('rejected This error means that the file doesnt exist')
+      reject('rejected This error means that the file doesnt exist') // rechaza la promesa si el archivo no existe
     }
   });
 };
 
 // ----------------------functions----------------------
-function isMarkdownFile(filePath) {
-  return MD_EXTENSIONS.includes(path.extname(filePath))
+function isMarkdownFile(filePath) { //cehca si el archivo esm arkdown
+  return MD_EXTENSIONS.includes(path.extname(filePath)) // usnado includes es decir si el sting de la ruta incluye el texto .md o .markdown
 }
 
 function readMdFile(file) {
   return new Promise((resolve, reject) => {
-    fs.readFile(file, 'utf-8', (err, data) => {
-      if (err) {
+    fs.readFile(file, 'utf-8', (err, data) => { // usamos fs para leer el archivo y utf-8 para llerlo como letras y no codigo biinario o hexadecimal
+      if (err) { // si hay un error manda el codigo de error y rechaza la promesa
         reject(err)
-      } else {
+      } else { // si todo sale bien regresamos los datos de adentro del archivo
         resolve(data)
       }
     });
   });
 }
-function extractLinks(data, pathFrom, validate) {
+function extractLinks(data, pathFrom, validate) { // recibe la informacion del archivo md, la ruta y la opcion de validar o no
   let match;
   const linkArray = [] // array donde guardar los resultados
-  while ((match = LINK_REGEX.exec(data)) !== null) {
+  while ((match = LINK_REGEX.exec(data)) !== null) { // usamos el regez apra encontrasr los que si son links
     linkArray.push(checkLinkStatus({
-      text: match[1],
-      href: match[2],
-      file: pathFrom
-    }, validate));
+      text: match[1], // usando el regez vamos a meter lo que esta en corchetes cuadrados [google]
+      href: match[2], // usando el regex vamos a meter el li9nk entree parentesis (www.google.com)
+      file: pathFrom // guardmos en file la ruta que traemos en el progrma
+    }, validate)); // mandamos el argumandto de valdiar a la funciion check linkstatyus
   }
   return Promise.all(linkArray)
 }
 
 function checkLinkStatus(linksObject, validate) {
-  if (!validate) {
-    return Promise.resolve(linksObject)
-  } else {
-    return axios.get(linksObject.href)
-    .then(response => {
-      linksObject.status = response.status;
-      linksObject.statusText = linksObject.status >= 200 && linksObject.status < 400 ? 'ok' : 'fail';
-      return linksObject
-    })
-    .catch(error => {
-      linksObject.status = error.response ? error.response.status : 'error'
-      linksObject.statusText = 'fail';
-      return linksObject
-    }); 
+  if (!validate) { // si es false le mandamos la informacion como ya la tenemos solo 3 campos
+    return Promise.resolve(linksObject)  
+  } else {  // si es true le mandamos los dos campos nuevos par avalidar http
+    return axios.get(linksObject.href) // pedimos a xios que analice los links
+      .then(response => { // si es correcto el link  gaurdmoas su status y un texto apra indicar ok
+        linksObject.status = response.status;
+        linksObject.statusText = linksObject.status >= 200 && linksObject.status < 400 ? 'ok' : 'fail';
+        return linksObject
+      })
+      .catch(error => { // si falla rechazzamos la promesa
+        linksObject.status = error.response ? error.response.status : 'error'
+        linksObject.statusText = 'fail';
+        return linksObject
+      });
   }
 }
 

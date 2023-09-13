@@ -67,7 +67,7 @@ describe('mdLinks', () => {
     expect(result).toBeDefined();
   });
 
-  test('should correctly extract 2 links with validation', async () => {
+  test('Prueba Final debe recibir 2 objetos con los 5 campos', async () => {
     fs.existsSync.mockReturnValue(true);
     fs.readFile.mockImplementation((path, encoding, callback) => {
       callback(null, mockMDContent);
