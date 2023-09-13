@@ -16,7 +16,21 @@ const mdLinks = (pathArgument, options) => { // argumentos 1 la ruta del archivo
     const absolutePath = getAbsolutePath(pathArgument) // usando la funcion getAbsolute convierto el path a absoluto
 
     if (fs.existsSync(absolutePath)) {  // checo si el archivo existe
-      if (isMarkdownFile(absolutePath)) { // si el archivo existe ahora checho si es un archivo markdown
+      if (isDirectory(absolutePath)) {
+        // guardar los archivos del directotio en una variable
+        // a ese lista de archivos aplicarle la funcion is amrkdownFile con un for o con filter
+        //quedaron con una lsita unicamente de archivos tipo md
+
+        // a cada archivo aplciarle la misma funcion mdlinks estoe s recursividad
+
+        //.then regresar un arreglo con todos los resultados con resolve
+        //.ctach mandar un error egenral letyendo los directorios
+
+        console.log('es un directorio');
+        return 'Pormesa directoprio'
+      }
+      //Si no es directorio haz lo normal
+      else if (isMarkdownFile(absolutePath)) { // si el archivo existe ahora checho si es un archivo markdown
         readMdFile(absolutePath) // si es un archivo amrkon lo leo usando la funcion ReadMDFILE
           .then(data => {         // si se resuelve la funcion guardamos lo que nos regresa en una variable llamada data
             return extractLinks(data, absolutePath, options)  // usamos la variabel data como prametro de la funcione para extraer los links
@@ -29,10 +43,10 @@ const mdLinks = (pathArgument, options) => { // argumentos 1 la ruta del archivo
           });
       }
       else {
-        resolve([isExtensionMD, null]) // checar que hacer en este else cuando el archivo esxiste pero no es md
+        reject('This File is not a markdwon file.') // rechaza la promesa si el archivo no es de marcado
       }
     } else {
-      reject('rejected This error means that the file doesnt exist') // rechaza la promesa si el archivo no existe
+      reject('This error means that the file doesnt exist.') // rechaza la promesa si el archivo no existe
     }
   });
 };
@@ -40,6 +54,10 @@ const mdLinks = (pathArgument, options) => { // argumentos 1 la ruta del archivo
 // ----------------------functions----------------------
 function isMarkdownFile(filePath) { //cehca si el archivo esm arkdown
   return MD_EXTENSIONS.includes(path.extname(filePath)) // usnado includes es decir si el sting de la ruta incluye el texto .md o .markdown
+}
+
+function isDirectory(inputPath) {
+  return fs.statSync(inputPath).isDirectory();
 }
 
 function readMdFile(file) {
@@ -68,7 +86,7 @@ function extractLinks(data, pathFrom, validate) { // recibe la informacion del a
 
 function checkLinkStatus(linksObject, validate) {
   if (!validate) { // si es false le mandamos la informacion como ya la tenemos solo 3 campos
-    return Promise.resolve(linksObject)  
+    return Promise.resolve(linksObject)
   } else {  // si es true le mandamos los dos campos nuevos par avalidar http
     return axios.get(linksObject.href) // pedimos a xios que analice los links
       .then(response => { // si es correcto el link  gaurdmoas su status y un texto apra indicar ok
@@ -97,5 +115,6 @@ const getAbsolutePath = (inputPath) => {
 module.exports = {
   mdLinks,
   getAbsolutePath,
-  isMarkdownFile
+  isMarkdownFile,
+  isDirectory
 }

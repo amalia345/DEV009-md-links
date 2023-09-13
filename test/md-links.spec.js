@@ -1,6 +1,6 @@
 const fs = require('fs');
 const path = require('path');
-const { mdLinks, getAbsolutePath, isMarkdownFile } = require('../index.js');
+const { mdLinks, getAbsolutePath, isMarkdownFile, isDirectory } = require('../index.js');
 
 // Mock the fs module
 jest.mock('fs');
@@ -31,6 +31,8 @@ describe('getAbsolutePath', () => {
   });
 });
 
+
+
 describe('isMarkdownFile', () => {
 
   test('Regresa True si es .md', () => {
@@ -54,7 +56,7 @@ describe('mdLinks', () => {
 
   test('rechaza si el archivo no existe', () => {
     fs.existsSync.mockReturnValue(false);
-    return expect(mdLinks('no-existo', {})).rejects.toEqual('rejected This error means that the file doesnt exist');
+    return expect(mdLinks('no-existo', {})).rejects.toEqual('This error means that the file doesnt exist.');
   });
 
   test('resuelve si el archivo si existe', async () => {
@@ -92,3 +94,14 @@ describe('mdLinks', () => {
     });
   });
 });
+// ------------------HITO 3 --------------------
+describe('isDirectory', () => {
+  it('Regresa true para directorios', () => {
+    const resultado = isDirectory(__dirname);
+    expect(resultado).toBe(true)
+  });
+  it('Regresa false para archivos', () => {
+    const resultado = isDirectory(__filename);
+    expect(resultado).toBe(false)
+  });
+})
