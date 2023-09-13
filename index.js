@@ -17,14 +17,14 @@ const mdLinks = (pathArgument, options) => { // argumentos 1 la ruta del archivo
 
     if (fs.existsSync(absolutePath)) {  // checo si el archivo existe
       if (isDirectory(absolutePath)) {
-        // guardar los archivos del directotio en una variable
-        // a ese lista de archivos aplicarle la funcion is amrkdownFile con un for o con filter
-        //quedaron con una lsita unicamente de archivos tipo md
+        // guardar todos los archivos del directotio en una variable
+        // a ese lista de archivos aplicarle la funcion is MarkdownFile con un for o con filter
+        // guardar en una variable array unicamente los archivos que si son archivos tipo md
 
-        // a cada archivo aplciarle la misma funcion mdlinks estoe s recursividad
+        //a cada archivo aplicarle la misma funcion mdlinks esto es recursividad
 
         //.then regresar un arreglo con todos los resultados con resolve
-        //.ctach mandar un error egenral letyendo los directorios
+        //.ctach mandar un error general de leyendo los directorios error
 
         console.log('es un directorio');
         return 'Pormesa directoprio'
@@ -87,7 +87,7 @@ function extractLinks(data, pathFrom, validate) { // recibe la informacion del a
 function checkLinkStatus(linksObject, validate) {
   if (!validate) { // si es false le mandamos la informacion como ya la tenemos solo 3 campos
     return Promise.resolve(linksObject)
-  } else {  // si es true le mandamos los dos campos nuevos par avalidar http
+  } else {  // si es true le mandamos los dos campos nuevos par avalidar https
     return axios.get(linksObject.href) // pedimos a xios que analice los links
       .then(response => { // si es correcto el link  gaurdmoas su status y un texto apra indicar ok
         linksObject.status = response.status;
