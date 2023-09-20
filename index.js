@@ -10,54 +10,71 @@ const LINK_REGEX = /\[([^\]]+)\]\((http[s]?:\/\/[^)]+|www\.[^)]+)\)/g; // regex 
 const MD_EXTENSIONS = ['.md', '.markdown'] // las extensiones de tipo markdown
 
 // ----------------------mdlinks----------------------
-const mdLinks = (pathArgument, options) => { // argumentos 1 la ruta del archivo 2 true o false par ver si validamos los links
+const mdLinks = (pathArgument, options) => {
   return new Promise((resolve, reject) => {
-
-    const absolutePath = getAbsolutePath(pathArgument) // usando la funcion getAbsolute convierto el path a absoluto
-
-    if (fs.existsSync(absolutePath)) {  // checo si el archivo existe
-      if (isDirectory(absolutePath)) {
-        // guardar todos los archivos del directotio en una variable
-        // a ese lista de archivos aplicarle la funcion is MarkdownFile con un for o con filter
-        // guardar en una variable array unicamente los archivos que si son archivos tipo md
-
-        //a cada archivo aplicarle la misma funcion mdlinks esto es recursividad
-
-        //.then regresar un arreglo con todos los resultados con resolve
-        //.ctach mandar un error general de leyendo los directorios error
-
-        console.log('es un directorio');
-        return 'Pormesa directoprio'
-      }
-      //Si no es directorio haz lo normal
-      else if (isMarkdownFile(absolutePath)) { // si el archivo existe ahora checho si es un archivo markdown
-        readMdFile(absolutePath) // si es un archivo amrkon lo leo usando la funcion ReadMDFILE
-          .then(data => {         // si se resuelve la funcion guardamos lo que nos regresa en una variable llamada data
-            return extractLinks(data, absolutePath, options)  // usamos la variabel data como prametro de la funcione para extraer los links
+    const absolutePath = getAbsolutePath(pathArgument);
+    
+    if (fs.existsSync(absolutePath)) {
+      if (isDirectory(absolutePath)) { // Si es un directorio
+        exploreDirectory(absolutePath, options) // Nueva función
+          .then(links => {
+            resolve(links);
           })
-          .then(markdownLinks => { // resolvemos la promesa principal con los links que nos regresa extractLinks guardandolos en markdownLinks
-            resolve(markdownLinks) // y mandamos esos markdownlinks al CLI
-          })
-          .catch(err => { // error por si falla la fupromesa despues d eller el archiivo
-            reject("Error reading the md file " + err)
+          .catch(err => {
+            reject(err);
           });
-      }
-      else {
-        reject('This File is not a markdwon file.') // rechaza la promesa si el archivo no es de marcado
+      } else if (isMarkdownFile(absolutePath)) {
+        readMdFile(absolutePath)
+          .then(data => {
+            return extractLinks(data, absolutePath, options);
+          })
+          .then(markdownLinks => {
+            resolve(markdownLinks);
+          })
+          .catch(err => {
+            reject("Error reading the md file " + err);
+          });
+      } else {
+        resolve([]); // No es archivo md ni directorio
       }
     } else {
-      reject('This error means that the file doesnt exist.') // rechaza la promesa si el archivo no existe
+      reject('File or directory does not exist');
     }
   });
 };
 
 // ----------------------functions----------------------
-function isMarkdownFile(filePath) { //cehca si el archivo esm arkdown
+function isMarkdownFile(filePath) { //cehca si el archivo esm markdown
   return MD_EXTENSIONS.includes(path.extname(filePath)) // usnado includes es decir si el sting de la ruta incluye el texto .md o .markdown
 }
 
-function isDirectory(inputPath) {
-  return fs.statSync(inputPath).isDirectory();
+function exploreDirectory(dirPath, options) {
+  return new Promise((resolve, reject) => {
+    fs.readdir(dirPath, (err, items) => {
+      if (err) {
+        reject(err);
+        return;
+      }
+
+      const promises = items.map(item => {
+        const fullPath = path.join(dirPath, item);
+        return mdLinks(fullPath, options); // Llamada recursiva
+      });
+
+      Promise.all(promises)
+        .then(results => {
+          const links = [].concat(...results); // Aplana el array de arrays
+          resolve(links);
+        })
+        .catch(err => {
+          reject(err);
+        });
+    });
+  });
+}
+
+function isDirectory(filePath) {
+  return fs.lstatSync(filePath).isDirectory();
 }
 
 function readMdFile(file) {

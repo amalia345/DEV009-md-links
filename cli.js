@@ -7,7 +7,7 @@ let path2 = '../DEV@09-mh-links/index.jgs'
 let path3 = '../DEV009-md-links/myFile.md'
 let path4 = '../DEV009-md-links'
 
-mdLinks(path3, true)
+mdLinks(path3, false)
     .then((links) => {
         if (links && links.length > 0) {
             console.log(c.bgGreen('The file exists and its an markdown file, here is the info from the array:'));
