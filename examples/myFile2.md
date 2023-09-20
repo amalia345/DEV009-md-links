@@ -7,6 +7,8 @@ This is a test markdown file for the `mdLinks` function.
 - This is a [non-HTTP link](ftp://example.com) which won't be captured by the regex.
 - Visit [GitHub](https://github.com) for code hosting.
 - Visit [google2](www.google.com) for more google.
+- Visit [google2](www.google.com) for more google.
+- Visit [GitHub](https://github.com) for code hosting.
 
 Another empty line
 
