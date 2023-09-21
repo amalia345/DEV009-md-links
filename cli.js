@@ -11,9 +11,12 @@ let info = process.argv
 let path = info[2]
 let validate = info.includes('--validate')
 let stats = info.includes('--stats')
+
 if (stats) {
+    let polo 
     if (stats && validate) {
         mdLinks(path, true).then((links) =>{
+
             let totalLinks = links.length
             console.log(`Total links: ${totalLinks}`);
             let validated = links.filter(link => link.status >= 200 && link.status <=299).length
@@ -38,17 +41,17 @@ mdLinks(path, validate)
 
             links.forEach((link) => {
                 let texty = c.bgBlue(`Text:`) + ` ${link.text}   `
-                let hrefy = c.bgCyanBright(`Href:`) + ` ${link.href} `
-                let pathy = c.bgYellow(`path:`) + ` ${link.file}  `
+                let hrefy = c.bgBlue(`Href:`) + ` ${link.href} `
+                let pathy = c.bgBlue(`path:`) + ` ${link.file}  `
                 let statusy;
                 if (link.status >= 200 && link.status <= 399) {
                     statusy = c.bgGreen(`Status ${link.status}`);
                 } else {
                     statusy = c.bgRed(` Status ${link.status}`);
                 }
-                let messagy = c.bgCyanBright(`Message ${link.statusText} `)
+                let messagy = c.yellow(`Message ${link.statusText}`)
 
-                console.log(texty + hrefy + pathy + statusy + messagy);
+                console.log(texty + hrefy + pathy + statusy +'  '+ messagy + ' \n ');
             });
         } else {
             links.forEach((link) => {

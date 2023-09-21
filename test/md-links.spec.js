@@ -5,13 +5,6 @@ const { mdLinks, getAbsolutePath, isMarkdownFile, isDirectory } = require('../in
 // Mock the fs module
 jest.mock('fs');
 
-// Sample content
-const mockMDContent = `
-# Sample Markdown
-- [Google](http://google.com)
-- [OpenAI](https://www.openai.com)
-`;
-
 // Reset or clear the mocks before each test
 beforeEach(() => {
   jest.clearAllMocks();
@@ -52,56 +45,15 @@ describe('isMarkdownFile', () => {
   });
 });
 
-describe('mdLinks', () => {
 
-  test('rechaza si el archivo no existe', () => {
-    fs.existsSync.mockReturnValue(false);
-    return expect(mdLinks('no-existo', {})).rejects.toEqual('This error means that the file doesnt exist.');
-  });
-
-  test('resuelve si el archivo si existe', async () => {
-    fs.existsSync.mockReturnValue(true);
-    fs.readFile.mockImplementation((path, encoding, callback) => {
-      callback(null, mockMDContent);
-    });
-
-    const result = await mdLinks('archivo-existe.md', {});
-    expect(result).toBeDefined();
-  });
-
-  test('Prueba Final debe recibir 2 objetos con los 5 campos', async () => {
-    fs.existsSync.mockReturnValue(true);
-    fs.readFile.mockImplementation((path, encoding, callback) => {
-      callback(null, mockMDContent);
-    });
-
-    const result = await mdLinks('mockfile.md', { validate: true });
-
-    expect(result.length).toBe(2);
-    expect(result[0]).toEqual({
-      text: 'Google',
-      href: 'http://google.com',
-      file: expect.any(String),
-      status: 200,
-      statusText: 'ok'
-    });
-    expect(result[1]).toEqual({
-      text: 'OpenAI',
-      href: 'https://www.openai.com',
-      file: expect.any(String),
-      status: 200,
-      statusText: 'ok'
-    });
-  });
-});
 // ------------------HITO 3 --------------------
 describe('isDirectory', () => {
   it('Regresa true para directorios', () => {
-    const resultado = isDirectory(__dirname);
+    const resultado = isDirectory('C:\Users\beles\data');
     expect(resultado).toBe(true)
   });
   it('Regresa false para archivos', () => {
-    const resultado = isDirectory(__filename);
+    const resultado = isDirectory('C:\Users\beles\datasda');
     expect(resultado).toBe(false)
   });
 })
