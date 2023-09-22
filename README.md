@@ -25,7 +25,7 @@ Para abordar este problema, se ha desarrollado una biblioteca en Node.js. Esta b
 En resumen, el proyecto tiene como objetivo simplificar la tarea de analizar y gestionar enlaces en archivos Markdown, lo que facilitará la creación de contenido más fiable y comprensible en plataformas que utilizan este formato de marcado ligero.
 
 
-![md-links](https:&#x2F;&#x2F;www.canva.com&#x2F;design&#x2F;DAFvJ8clcjc&#x2F;view?utm_content=DAFvJ8clcjc&amp;utm_campaign=designshare&amp;utm_medium=embeds&amp;utm_source=link" target="_blank" rel="noopener)
+![md-links](https://i.imgur.com/u4pF8ST.png)
 
 
 
