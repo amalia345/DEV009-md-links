@@ -133,5 +133,5 @@ module.exports = {
   mdLinks,
   getAbsolutePath,
   isMarkdownFile,
-  isDirectory
+  isDirectory,
 }

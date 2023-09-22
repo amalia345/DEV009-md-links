@@ -2,11 +2,6 @@
 const { mdLinks } = require('./index.js');
 const c = require('ansi-colors');
 
-
-//= '../DEV009-md-links/index.js'
-// = '../DEV@09-mh-links/index.jgs'
-// '../DEV009-md-links/myFile.md'
-//'../DEV009-md-links/examples'
 let info = process.argv
 let path = info[2]
 let validate = info.includes('--validate')

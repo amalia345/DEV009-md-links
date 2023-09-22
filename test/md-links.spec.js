@@ -1,15 +1,15 @@
 const fs = require('fs');
 const path = require('path');
-const { mdLinks, getAbsolutePath, isMarkdownFile, isDirectory } = require('../index.js');
+const { getAbsolutePath, isMarkdownFile, isDirectory } = require('../index.js');
 
-// Mock the fs module
+// Mock de el modulo FS
 jest.mock('fs');
 
-// Reset or clear the mocks before each test
+// Limpiamos la memoria de los test 
 beforeEach(() => {
   jest.clearAllMocks();
 });
-
+// ------------------ TEST DE RUTAS  --------------------
 describe('getAbsolutePath', () => {
 
   test('Regresa el mismo si ya es absoluta la ruta', () => {
@@ -24,7 +24,7 @@ describe('getAbsolutePath', () => {
   });
 });
 
-
+// ------------------ TEST DE MARKDOWNM --------------------
 
 describe('isMarkdownFile', () => {
 
@@ -46,14 +46,30 @@ describe('isMarkdownFile', () => {
 });
 
 
-// ------------------HITO 3 --------------------
+// ------------------ TEST DE DIRECTORIOS --------------------
 describe('isDirectory', () => {
-  it('Regresa true para directorios', () => {
-    const resultado = isDirectory('C:\Users\beles\data');
-    expect(resultado).toBe(true)
+  test('should return true if path is a directory', () => {
+    fs.lstatSync.mockReturnValue({
+      isDirectory: () => true,
+    });
+
+    const result = isDirectory('some/directory/path');
+    expect(result).toBe(true);
   });
-  it('Regresa false para archivos', () => {
-    const resultado = isDirectory('C:\Users\beles\datasda');
-    expect(resultado).toBe(false)
   });
-})
+
+  test('should return false if path is not a directory', () => {
+    fs.lstatSync.mockReturnValue({
+      isDirectory: () => false,
+    });
+
+    const result = isDirectory('some/file/path');
+    expect(result).toBe(false);
+  });
+test('should throw an error if path does not exist', () => {
+    fs.lstatSync.mockImplementation(() => {
+      throw new Error('Path does not exist');
+    });
+
+    expect(() => isDirectory('non/existent/path')).toThrow('Path does not exist');
+  });
