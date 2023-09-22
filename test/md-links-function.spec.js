@@ -10,7 +10,7 @@ describe('mdLinks', () => {
         });
     });
 
-    it('Debe regresar un error si la promesa es rechazada', () => {
+    it('Debe regresar un error si la promesa es rechazada', () => {   
         return expect(mdLinks('no-existo', {})).rejects.toEqual('File or directory does not exist');
     });
 });

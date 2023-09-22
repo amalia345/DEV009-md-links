@@ -1,6 +1,6 @@
 const fs = require('fs');
 const path = require('path');
-const { getAbsolutePath, isMarkdownFile, isDirectory } = require('../index.js');
+const { readMdFile, getAbsolutePath, isMarkdownFile, isDirectory } = require('../index.js');
 
 // Mock de el modulo FS
 jest.mock('fs');
@@ -56,20 +56,47 @@ describe('isDirectory', () => {
     const result = isDirectory('some/directory/path');
     expect(result).toBe(true);
   });
+});
+
+test('should return false if path is not a directory', () => {
+  fs.lstatSync.mockReturnValue({
+    isDirectory: () => false,
   });
 
-  test('should return false if path is not a directory', () => {
-    fs.lstatSync.mockReturnValue({
-      isDirectory: () => false,
-    });
-
-    const result = isDirectory('some/file/path');
-    expect(result).toBe(false);
-  });
+  const result = isDirectory('some/file/path');
+  expect(result).toBe(false);
+});
 test('should throw an error if path does not exist', () => {
-    fs.lstatSync.mockImplementation(() => {
-      throw new Error('Path does not exist');
-    });
-
-    expect(() => isDirectory('non/existent/path')).toThrow('Path does not exist');
+  fs.lstatSync.mockImplementation(() => {
+    throw new Error('Path does not exist');
   });
+
+  expect(() => isDirectory('non/existent/path')).toThrow('Path does not exist');
+});
+// ------------------ TEST DE DIRECTORIOS --------------------
+describe('readMdFile', () => {
+  it('Debe regresar el contenido esperado', async () => {
+
+    const pathToTestFile = 'C:\\test.md';
+    const expectedContent = `# Sample Markdown File
+    This is a test markdown file
+    - Here's a link to [Google](https://www.google.com).
+    - Visit [GitHub](https://github.com) for code hosting.`;
+    try {
+      const content = await readMdFile(pathToTestFile);
+      console.log(content);
+      expect(content).toBe(expectedContent);
+
+
+    } catch (error) {
+      console.error(error);
+      expect(error).toBeNull();
+    }
+});
+
+  test('Regresa un rechazo cuando hay un error leyendo el archivo', () => {
+    const dummyError = new Error('Error reading file');
+    fs.readFile.mockImplementation((file, encoding, callback) => callback(dummyError));
+    return expect(readMdFile('path/to/dummyFile')).rejects.toThrow('Error reading file');
+  });
+})
