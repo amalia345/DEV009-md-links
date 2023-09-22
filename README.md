@@ -25,7 +25,7 @@ Para abordar este problema, se ha desarrollado una biblioteca en Node.js. Esta b
 En resumen, el proyecto tiene como objetivo simplificar la tarea de analizar y gestionar enlaces en archivos Markdown, lo que facilitará la creación de contenido más fiable y comprensible en plataformas que utilizan este formato de marcado ligero.
 
 
-![md-links](https://i.imgur.com/u4pF8ST.png)
+![alt text](https://i.imgur.com/u4pF8ST.png)
 
 
 
@@ -226,7 +226,7 @@ Validará si el link funciona correctamente o si está roto, añadiendo a cada e
 
     status - Códigos de respuesta HTTP
     request - La solicitud fue exitosa o falló
-* [validate](https://user-images.githubusercontent.com/75153007/269860925-e89a7baf-d7cc-4618-b268-ea15c0fb92c8.png)
+![alt text](https://user-images.githubusercontent.com/75153007/269860925-e89a7baf-d7cc-4618-b268-ea15c0fb92c8.png)
 
 --stats
 
@@ -235,7 +235,7 @@ Mostrará estadísticas de los links como:
     Total - Cantidad de enlaces encontrados
     Unique - Cantidad de enlaces únicos, es decir, sin repetición.
    
- * [stats](https://user-images.githubusercontent.com/75153007/269860930-75679af2-debe-435a-aebe-81b87a050e43.png)
+ ![alt text](https://user-images.githubusercontent.com/75153007/269860930-75679af2-debe-435a-aebe-81b87a050e43.png)
 
 En caso de que esta opción se combine con --validate, se agregarán dos estadísticas:
 
@@ -250,7 +250,7 @@ En caso de que esta opción se combine con --validate, se agregarán dos estadí
 Implementación
 Esta librería fue desarrolla con nodeJS y Javascript.
 El siguiente diagrama de flujo corresponde a la lógica programática.
-* [Diagrama de flujo](https://user-images.githubusercontent.com/75153007/264261915-d4a862e4-c6e8-42ad-b6fe-e8490896474a.png)
+![alt text](https://user-images.githubusercontent.com/75153007/264261915-d4a862e4-c6e8-42ad-b6fe-e8490896474a.png)
 
 
 ### *tests
