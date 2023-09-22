@@ -25,7 +25,7 @@ Para abordar este problema, se ha desarrollado una biblioteca en Node.js. Esta b
 En resumen, el proyecto tiene como objetivo simplificar la tarea de analizar y gestionar enlaces en archivos Markdown, lo que facilitará la creación de contenido más fiable y comprensible en plataformas que utilizan este formato de marcado ligero.
 
 
-![md-links](file:///C:/Users/beles/Downloads/Black%20White%20Problem%20Statement%20Brainstorm%20Presentation%20-2.pdf)
+![md-links](https://www.canva.com/design/DAFvJ8clcjc/view)
 
 
 
